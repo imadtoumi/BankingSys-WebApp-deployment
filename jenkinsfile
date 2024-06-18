@@ -1,0 +1,78 @@
+pipeline {
+    agent {label 'slave-1'}
+    
+    tools{
+        jdk 'jdk17'
+    }
+    
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+
+    stages {
+        stage('Clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        
+        stage('git chekout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/imadtoumi/Online-Banking-System-with-Flask-master.git'
+            }
+        }
+        
+        stage('Sonar-qube analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Online-banking \
+                    -Dsonar.projectKey=Online-banking'''
+                }
+            }
+        }
+        
+        stage('Docker build image') {
+            steps {
+                script{
+                    sh 'docker build -t online-banking:latest .'
+                }
+            }
+        }
+        stage('Trivy scan image') {
+            steps {
+                script{
+                    sh 'trivy image --no-progress --scanners vuln --severity HIGH,CRITICAL --format table -o scan.txt online-banking:latest'
+                }
+            }
+        }
+        stage('Docker run') {
+            steps {
+                script{
+                    sh 'docker run -dp 5000:5000 online-banking:latest'
+                }
+            }
+        }
+    }
+    
+     post {
+        // always {
+            //cleanWs() // Clean up workspace after each run
+        // }
+        success {
+            echo 'Pipeline completed successfully!'
+            // Additional steps on success, like sending notifications
+        }
+        failure {
+            echo 'Pipeline failed!'
+            // Additional steps on failure, like sending notifications
+        }
+        unstable {
+            echo 'Pipeline completed with warnings!'
+            // Additional steps on instability, like sending notifications
+        }
+        aborted {
+            echo 'Pipeline was aborted!'
+            // Additional steps on abort, like sending notifications
+        }
+    }
+}
