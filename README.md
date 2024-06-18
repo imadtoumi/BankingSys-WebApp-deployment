@@ -1,4 +1,4 @@
-## Just took this frpm an other repo that i don't remember, i wanted to docker it and automate it's deployment
+#### Took this project from : https://github.com/SandipPalit/Online-Banking-System-with-Flask.git
 
 jenkins pipeline : </br>
 ```python
