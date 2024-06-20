@@ -47,6 +47,8 @@ sudo iptables -A DOCKER-USER -s <nginx_server_ip> -d <docker_container_ip> -p tc
 # Drop all other traffic to Docker container on port 5000
 sudo iptables -A DOCKER-USER -d <docker_container_ip> -p tcp --dport 5000 -j DROP
 ```
+![nosecure](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/77ae08f9-4fe3-4eb5-95d3-6b8326066d0f) </br>
+- It will be shown as "Not secure" because the cert is self signed and we didn't sign it using a CA (certificate authority / third party).<br>
 
 jenkins pipeline : </br>
 ```python
