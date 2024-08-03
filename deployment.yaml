@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: banksysdep
+  namespace: bank-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bank
+  template:
+    metadata:
+      name: bank-sys-pod
+      labels:
+        app: bank
+    spec:
+      containers:
+      - image: imadtoumi/online_banking:latest
+        name: bank-sys-cont
+        ports:
+        - containerPort: 5000
