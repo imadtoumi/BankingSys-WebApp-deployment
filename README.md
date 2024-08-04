@@ -1,4 +1,4 @@
-### Took this project from : https://github.com/SandipPalit/Online-Banking-System-with-Flask.git
+### Took Source code from : https://github.com/SandipPalit/Online-Banking-System-with-Flask.git
 
 ## AWS
 #### aws ec2 instances creation
