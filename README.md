@@ -69,18 +69,6 @@ sudo iptables -A DOCKER-USER -d <docker_container_ip> -p tcp --dport 5000 -j DRO
 ![nosecure](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/77ae08f9-4fe3-4eb5-95d3-6b8326066d0f) </br>
 - It will be shown as "Not secure" because the cert is self signed and we didn't sign it using a CA (certificate authority / third party).<br>
 
-
-![onlline-jenkins](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/3e500cb8-540c-4c57-b053-775ac90ed0d2) </br>
-
-![consoleoutpt](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/bb772187-cc54-42b2-b7dd-2e0a88ad300e) </br>
-
-![onlinebanking](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/f7e7202c-ea40-4aa9-b4bc-02dd1cba4f96) </br>
-
-![issues-sonar](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/bb0e79f9-a16c-44e8-bb31-d0b755eb7b07) </br>
-
-![dockercont](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/d4fd5f4f-2fb1-4b7f-91fd-f518dc1a86e5)
-
-
 # Online Banking System, with python Flask
 
 [![Project Demo](https://img.youtube.com/vi/E0A_Z9ybDeo/0.jpg)](https://www.youtube.com/watch?v=E0A_Z9ybDeo)
