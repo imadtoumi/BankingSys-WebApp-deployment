@@ -116,7 +116,8 @@ pipeline {
 ![sonar](https://github.com/user-attachments/assets/7c5c333d-c22f-4911-9c86-3d0608235116) </br>
 ![dep,svc](https://github.com/user-attachments/assets/3c5b782e-c452-4586-b4c8-7015ece4e5e5) </br>
 ![workspace](https://github.com/user-attachments/assets/b8edf331-e442-4838-9971-8bff79758ffc) </br>
-
+- App is accessible via Node port insidicated in the svc created : <public ip of ec2 instance>:<Port> </br>
+![app](https://github.com/user-attachments/assets/43493c3d-f9b0-4299-84c9-c71ff1562ba8)
 
 ## Nginx and HTTPS part
 ### I made the app accesible only thre nginx , used nginx as reverse proxy that uses https. </br>
