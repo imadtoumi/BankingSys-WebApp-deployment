@@ -1,5 +1,24 @@
 ### Took this project from : https://github.com/SandipPalit/Online-Banking-System-with-Flask.git
 
+## AWS
+#### aws ec2 instances creation
+- 3 ec2 instances are needed (in the closest), one for jenkins and sonarqube, one to be the master node in k8s and one to be a worker node </br>
+- Instances type: </br>
+    1- t2 Large: jenkins+sonar. </br>
+    2- t2 medium: k8s master. </br>
+    3- t2 small: k8s worker node. </br>
+![ec2s](https://github.com/user-attachments/assets/a0077bc1-e3ba-48e8-b938-788735e7159f) </br>
+Setup the instances: </br>
+- For k8s we will setup the cluster using kubeadm and containerd as the CRI here the complete guide link : https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/ </br>
+- For jenkins and sonarqube server, i chose to run jenkins as a service (installation guide: https://www.jenkins.io/doc/book/installing/linux/ ), for sonarqube i chose to run it as a docker conatiner (install docker): </br>
+```python
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+```
+
+
+
+
+## Nginx and HTTPS part
 ### I made the app accesible only thre nginx , used nginx as reverse proxy that uses https. </br>
 ##### First, the docker conatiner shouldn't be maped to a port on the host, else it will be accessible from the oustide. </br>
 
@@ -50,87 +69,7 @@ sudo iptables -A DOCKER-USER -d <docker_container_ip> -p tcp --dport 5000 -j DRO
 ![nosecure](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/77ae08f9-4fe3-4eb5-95d3-6b8326066d0f) </br>
 - It will be shown as "Not secure" because the cert is self signed and we didn't sign it using a CA (certificate authority / third party).<br>
 
-jenkins pipeline : </br>
-```python
-pipeline {
-    agent {label 'slave-1'}
 
-    tools{
-        jdk 'jdk17'
-    }
-
-    environment {
-        SCANNER_HOME = tool 'sonar-scanner'
-    }
-
-    stages {
-        stage('Clean workspace') {
-            steps {
-                cleanWs()
-            }
-        }
-
-        stage('git chekout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/imadtoumi/Online-Banking-System-with-Flask-master.git'
-            }
-        }
-
-        stage('Sonar-qube analysis') {
-            steps {
-                withSonarQubeEnv('sonar-server') {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Online-banking \
-                    -Dsonar.projectKey=Online-banking'''
-                }
-            }
-        }
-
-        stage('Docker build image') {
-            steps {
-                script{
-                    sh 'docker build -t online-banking:latest .'
-                }
-            }
-        }
-        stage('Trivy scan image') {
-            steps {
-                script{
-                    sh 'trivy image --no-progress --scanners vuln --severity HIGH,CRITICAL --format table -o scan.txt online-banking:latest'
-                }
-            }
-        }
-        stage('Docker run') {
-            steps {
-                script{
-                    sh 'docker run -d online-banking:latest'
-                }
-            }
-        }
-    }
-
-     post {
-        // always {
-            //cleanWs() // Clean up workspace after each run
-        // }
-        success {
-            echo 'Pipeline completed successfully!'
-            // Additional steps on success, like sending notifications
-        }
-        failure {
-            echo 'Pipeline failed!'
-            // Additional steps on failure, like sending notifications
-        }
-        unstable {
-            echo 'Pipeline completed with warnings!'
-            // Additional steps on instability, like sending notifications
-        }
-        aborted {
-            echo 'Pipeline was aborted!'
-            // Additional steps on abort, like sending notifications
-        }
-    }
-}
-```
 ![onlline-jenkins](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/3e500cb8-540c-4c57-b053-775ac90ed0d2) </br>
 
 ![consoleoutpt](https://github.com/imadtoumi/Online-Banking-System-with-Flask-master/assets/41326066/bb772187-cc54-42b2-b7dd-2e0a88ad300e) </br>
