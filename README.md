@@ -16,13 +16,106 @@ docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 ```
 - In order for our pipeline to work correctly, we need jenkins to be able to interact with our k8s cluster, we will create a service account, a role, role binding and a token (token used to authenticate jenkins in our cluster) for it :
 ```python
+# This should created in the master node
 kubectl create serviceaccount jenkins --namespace=bank-app
 kubectl create -f jenkinsrole.yaml
 kubectl create -f rolebinding.yaml
 kubectl create -f sec.yaml
 # after this retrieve the token from the secret created
 ```
+### Pipeline
+```python
+pipeline {
+    agent any
 
+    tools{
+        jdk 'jdk17'
+    }
+
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+
+    stages {
+        stage('Clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('git chekout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/imadtoumi/Online-Banking-System-with-Flask-master.git'
+            }
+        }
+        
+        stage('File system scan') {
+            steps {
+                sh 'trivy fs --format table -o trivy-fs-scan.html .'
+            }
+        }
+
+        stage('Sonar-qube analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Online-banking \
+                    -Dsonar.projectKey=Online-banking'''
+                }
+            }
+        }
+        
+        stage('Wait for quality gate') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                }
+            }
+        }
+
+        stage('Docker tag/build image') {
+            steps {
+                script{
+                    sh 'docker build -t imadtoumi/online_banking:latest .'
+                }
+            }
+        }
+        
+        stage('Trivy scan image') {
+            steps {
+                script{
+                    sh 'trivy image --no-progress --scanners vuln --severity HIGH,CRITICAL --format table -o image-scan.txt imadtoumi/online_banking:latest'
+                }
+            }
+        }
+        
+        stage('Docker push') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh 'docker push imadtoumi/online_banking:latest'
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to k8s') {
+            steps {
+                script{
+                    withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8s-cred', namespace: 'bank-app', restrictKubeConfigAccess: false, serverUrl: 'https://172.31.15.47:6443') {
+                        sh 'kubectl create -f deployment.yaml'
+                        sh 'kubectl create -f svc.yaml'
+                    }
+                }
+            }
+        }    
+    }
+}
+    
+```
+![jenkins](https://github.com/user-attachments/assets/f69bf8b7-15a1-464f-95f6-40f8cc6ccade) </br>
+![sonar](https://github.com/user-attachments/assets/7c5c333d-c22f-4911-9c86-3d0608235116) </br>
+![dep,svc](https://github.com/user-attachments/assets/3c5b782e-c452-4586-b4c8-7015ece4e5e5) </br>
+![workspace](https://github.com/user-attachments/assets/b8edf331-e442-4838-9971-8bff79758ffc) </br>
 
 
 ## Nginx and HTTPS part
