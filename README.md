@@ -14,7 +14,12 @@ Setup the instances: </br>
 ```python
 docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 ```
-
+- In order for our pipeline to work correctly, we need jenkins to be able to interact with our k8s cluster, we will create a service account, a role, and a role binding for it :
+```python
+kubectl create serviceaccount jenkins --namespace=bank-app
+kubectl create -f jenkinsrole.yaml
+kubectl create -f rolebinding.yaml 
+```
 
 
 
