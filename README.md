@@ -118,6 +118,9 @@ pipeline {
 ![workspace](https://github.com/user-attachments/assets/b8edf331-e442-4838-9971-8bff79758ffc) </br>
 - App is accessible via Node port insidicated in the svc created : <public ip of ec2 instance>:<Port> </br>
 ![app](https://github.com/user-attachments/assets/43493c3d-f9b0-4299-84c9-c71ff1562ba8)
+#### Architecture 
+![Untitled Diagram drawio](https://github.com/user-attachments/assets/66837826-e20f-4b22-9f45-0d4c6f13228b) </br>
+![arch](https://github.com/user-attachments/assets/8a1a1e07-fd51-4518-9073-f93bc30d21f3) </br>
 
 ## Nginx and HTTPS part
 ### I made the app accesible only thre nginx , used nginx as reverse proxy that uses https. </br>
